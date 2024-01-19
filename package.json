@@ -1,0 +1,34 @@
+{
+  "name": "part_4_fullstack-open-2023",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node index",
+    "dev": "cross-env NODE_ENV=development nodemon index",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "testMain": "cross-env NODE_ENV=test jest --verbose --runInBand -- ./utils/main.test.js",
+    "testbloglist": "cross-env NODE_ENV=test jest --verbose --runInBand -- ./utils/bloglist.test.js",
+    "start:test": "cross-env NODE_ENV=test nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.4.4"
+  },
+  "devDependencies": {
+    "jest": "^29.6.4",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "globalTeardown": "./teardown.js"
+  }
+}

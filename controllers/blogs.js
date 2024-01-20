@@ -8,12 +8,7 @@ blogRouter.get("/api/blogs", (request, response) => {
   Blog.find({})
     .populate("user")
     .then((blogs) => {
-      console.log("blogs", blogs);
-      blogs = blogs.map((x) => {
-        x.user.password = undefined;
-        return x;
-      });
-      response.json(blogs);
+      response.status(200).json(blogs);
     });
 });
 blogRouter.post("/api/blogs", async (request, response, next) => {
@@ -26,7 +21,6 @@ blogRouter.post("/api/blogs", async (request, response, next) => {
     return next(err);
   }
 
-  console.log("decoded", decodedToken, config.SECRET);
   if (!decodedToken.id) {
     return response.status(401).json({ error: "Unauthorized" });
   }
@@ -38,7 +32,6 @@ blogRouter.post("/api/blogs", async (request, response, next) => {
     response.status(400).json(request.body);
   } else {
     let document = { ...request.body, user: user._id };
-    console.log("document", document, "user's name", user.username);
     const blog = new Blog(document);
     blog
       .save()
@@ -50,10 +43,7 @@ blogRouter.post("/api/blogs", async (request, response, next) => {
               blogs: result._id,
             },
           },
-        ).then((res) => {
-          console.log("updated the user's blog", res);
-        });
-        console.log("saved", result);
+        )
         response.status(201).json(result);
       })
       .catch((err) => {
@@ -68,7 +58,6 @@ blogRouter.get("/api/blogs/:id", (request, response) => {
       response.status(200).send(res);
     })
     .catch((err) => {
-      console.error("unable to retrieve blog", id, err.message);
       response.status(404).send(err.message);
     });
 });
@@ -93,9 +82,10 @@ blogRouter.delete("/api/blogs/:id", async (request, response, next) => {
   }
   let id = request.params.id;
   let blogCreator = await Blog.findOne({ _id: id });
-  blogCreator = blogCreator.user.toString();
-  console.log("creator ", blogCreator);
-  if (blogCreator === decodedToken.id) {
+  console.log("delete VERIRy decoded token----------------------------------------------", blogCreator,decodedToken)
+  console.log("blog Createor", blogCreator , decodedToken,blogCreator.author === decodedToken.username )
+  blogCreator = blogCreator.author;
+  if (blogCreator === decodedToken.username) {
     Blog.deleteOne({ _id: id })
       .then((res) => {
         console.log("id", id, "deleted", res);
@@ -136,9 +126,17 @@ blogRouter.put("/api/blogs/:id", (request, response, next) => {
       },
     };
   }
-  Blog.updateOne({ _id: id }, updateDoc)
+  else {
+    updateDoc = {
+      $set : {
+        title : request.body.updateData.title
+      }
+    } 
+  }
+      console.log("updated doc --------------------------------------------------------------------",updateDoc, request.body)
+      Blog.findByIdAndUpdate(id, updateDoc )
     .then((res) => {
-      console.log("id", id, "updated", res);
+      console.log("res---", res)
       response.status(200).send(res);
     })
     .catch((err) => {

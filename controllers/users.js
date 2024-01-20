@@ -4,7 +4,7 @@ let bcryptjs = require("bcryptjs");
 var salt = bcryptjs.genSaltSync(10);
 
 // returns all users in the database
-userRouter.get("/api/users", (request, response, next) => {
+ userRouter.get("/api/users", (request, response, next) => {
   User.find({})
     .populate("blogs")
     .then((data) => {

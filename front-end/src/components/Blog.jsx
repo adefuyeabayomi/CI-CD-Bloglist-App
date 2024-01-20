@@ -36,7 +36,7 @@ const Blog = ({ blog, removePost }) => {
   };
 
   let deleteButton =
-    userID === blog.user.id ? (
+    userID === blog.user?.id ? (
       <button style={styles.deleteStyle} onClick={deleteBlog}>
         Remove
       </button>

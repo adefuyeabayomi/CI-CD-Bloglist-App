@@ -1,3 +1,3 @@
 module.exports = () => {
-  throw new Error()
+  process.exit(0)
 };

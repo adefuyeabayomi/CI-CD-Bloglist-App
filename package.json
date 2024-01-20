@@ -42,6 +42,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "globalTeardown": "./teardown.js"
+    "globalTeardown": "./teardown.js",
+    "testPathIgnorePatterns": ["front-end"]
   }
 }

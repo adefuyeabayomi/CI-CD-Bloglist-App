@@ -14,7 +14,7 @@
     "testbloglist": "cross-env NODE_ENV=test jest --verbose --runInBand -- ./utils/bloglist.test.js",
     "start:test": "cross-env NODE_ENV=test nodemon index.js",
     "lint:backend": "eslint .",
-    "lint:frontend": "cd front-end && npm run lint",
+    "lint:frontend": "cd front-end && npm install && npm run lint",
     "format": "prettier . --write"
   },
   "author": "",

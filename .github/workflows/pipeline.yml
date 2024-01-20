@@ -1,56 +1,57 @@
-name : Bloglist Deployment Pipeline
+name: Bloglist Deployment Pipeline
 
-on: 
-    pull_request :
-        branches: [master]
-        types: [opened]
-    push: 
-        branches: [master]
+on:
+  pull_request:
+    branches: [master]
+    types: [opened]
+  push:
+    branches: [master]
 
+jobs:
+  CodeQualityTest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.9.0"
+      - name: Install Dependencies
+        run: npm install
+      - name: Lint Backend
+        run: npm run lint:backend
+      - name: Lint Front-end
+        run: npm run lint:frontend
+      - name: Run Tests
+        run: npm run test
+      - name: notifySuccess
+        if: success()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: New Deployment for bloglist app succeded
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: notifyFailure
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: New Deployment for bloglist app failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
-jobs: 
-    CodeQualityTest:
-        runs-on: ubuntu-latest
-        steps: 
-            - uses: actions/checkout@v3
-            - uses: actions/setup-node@v4
-              with: 
-                node-version : '20.9.0'
-            - name: Install Dependencies
-              run: npm install
-            - name: Lint Code
-              run: npm run lint
-            - name: Run Tests
-              run: npm run test
-            - name: notifySuccess
-              if: success()
-              uses: rjstone/discord-webhook-notify@v1
-              with: 
-                severity: info
-                details: New Deployment for bloglist app succeded 
-                webhookUrl :  ${{ secrets.DISCORD_WEBHOOK }}
-            - name: notifyFailure
-              if: failure()
-              uses:  rjstone/discord-webhook-notify@v1
-              with: 
-                severity: error
-                details: New Deployment for bloglist app failed
-                webhookUrl :  ${{ secrets.DISCORD_WEBHOOK }}
-            
-    Bump_Tag: 
-        if: ( github.ref_name == 'main' && github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip'))
-        needs: [CodeQualityTest]
-        runs-on: ubuntu-20.04
-        permissions: 
-            contents: write
-        steps: 
-            - name : Begin Tagging Code Milestone
-              run : echo "Tagging new merge to the main branch"
-            - name: checkout repo
-              uses: actions/checkout@v3
-            - name: Bump version and push tag
-              uses:  anothrNick/github-tag-action@1.55.0
-              env: 
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  WITH_V: true
-                  DEFAULT_BUMP: minor
+  Bump_Tag:
+    if: ( github.ref_name == 'main' && github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip'))
+    needs: [CodeQualityTest]
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - name: Begin Tagging Code Milestone
+        run: echo "Tagging new merge to the main branch"
+      - name: checkout repo
+        uses: actions/checkout@v3
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.55.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: minor

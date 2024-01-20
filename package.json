@@ -10,6 +10,7 @@
     "start": "cross-env NODE_ENV=production node index",
     "dev": "cross-env NODE_ENV=development nodemon index",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
+    "test:remote": "cross-env NODE_ENV=production jest --verbose --runInBand",
     "testMain": "cross-env NODE_ENV=test jest --verbose --runInBand -- ./utils/main.test.js",
     "testbloglist": "cross-env NODE_ENV=test jest --verbose --runInBand -- ./utils/bloglist.test.js",
     "start:test": "cross-env NODE_ENV=test nodemon index.js",
